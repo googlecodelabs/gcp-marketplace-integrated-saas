@@ -8,4 +8,4 @@ https://cloud.google.com/marketplace/docs/partners/integrated-saas/.
 
 ## Disclaimer
 
-This is not an official Google product.
+This is not an officially supported Google product
