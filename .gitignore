@@ -1,3 +1,4 @@
 account.json
 database.json
 *.pyc
+*~
