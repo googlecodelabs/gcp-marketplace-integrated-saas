@@ -222,7 +222,7 @@ class Procurement(object):
                                                account_id)
                 return True
 
-        elif event_type == 'ENTITLEMENT_PLAN_CHANGE_CANCELED':
+        elif event_type == 'ENTITLEMENT_PLAN_CHANGE_CANCELLED':
             # Do nothing. We approved the original change, but we never recorded
             # it or changed the service level since it hadn't taken effect yet.
             return True
