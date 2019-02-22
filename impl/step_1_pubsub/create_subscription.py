@@ -58,9 +58,13 @@ def main(argv):
         subscription = subscriber.create_subscription(subscription_path,
                                                       topic_path)
     except PermissionDenied:
-        print 'PERMISSION DENIED: Check that your service account was granted '
-        print 'the Pub/Sub Editor role. Go to: %s' % PROJECT_IAM_PAGE.format(
-            project_id)
+        error_message = ('PERMISSION DENIED: Check that the Pub/Sub API is '
+        'enabled in your project and that your service account was granted '
+        'Pub/Sub Editor role. \n'
+        'Check API status at: %s \n'
+        'Check IAM roles at: %s ' % (PROJECT_PUBSUB_PAGE.format(project_id),
+                                     PROJECT_IAM_PAGE.format(project_id)))
+        print error_message
         return
 
     print 'Subscription created: {}'.format(subscription)
