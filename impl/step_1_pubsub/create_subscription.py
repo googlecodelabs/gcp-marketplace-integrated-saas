@@ -19,6 +19,7 @@ from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 
 PROJECT_IAM_PAGE = 'https://console.cloud.google.com/iam-admin/iam?project={}'
+PROJECT_PUBSUB_PAGE = 'https://console.cloud.google.com/apis/library/pubsub.googleapis.com?project={}'
 
 TOPIC_PROJECT = 'cloudcommerceproc-prod'
 TOPIC_NAME_PREFIX = 'DEMO-'
