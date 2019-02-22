@@ -60,11 +60,12 @@ def main(argv):
                                                       topic_path)
     except PermissionDenied:
         error_message = ('PERMISSION DENIED: Check that the Pub/Sub API is '
-        'enabled in your project and that your service account was granted the '
-        'Pub/Sub Editor role. \n'
-        'Check API status at: %s \n'
-        'Check IAM roles at: %s ' % (PROJECT_PUBSUB_PAGE.format(project_id),
-                                     PROJECT_IAM_PAGE.format(project_id)))
+                         'enabled in your project and that your service '
+                         'account  was granted the Pub/Sub Editor role. \n'
+                         'Check API status at: %s \n'
+                         'Check IAM roles at: %s ' % (
+                             PROJECT_PUBSUB_PAGE.format(project_id),
+                             PROJECT_IAM_PAGE.format(project_id)))
         print error_message
         return
 
