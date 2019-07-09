@@ -29,7 +29,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 def _get_usage_for_product():
     ### TODO: Get the usage since the last report time. ###
-    return 10
+    return '10'
 
 
 def _get_staging_discovery():
