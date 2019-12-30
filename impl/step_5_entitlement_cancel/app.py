@@ -236,7 +236,7 @@ class Procurement(object):
 
                     ### TODO: Turn off customer's service. ###
                     self.db.write(account_id, customer)
-            return True
+                return True
 
         elif event_type == 'ENTITLEMENT_PENDING_CANCELLATION':
             # Do nothing. We want to cancel once it's truly canceled. For now
