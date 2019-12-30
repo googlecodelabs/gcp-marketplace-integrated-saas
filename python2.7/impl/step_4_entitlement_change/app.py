@@ -21,13 +21,13 @@ import uuid
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.cloud import pubsub_v1
-from google.oauth2 import service_account
 
 from impl.database.database import JsonDatabase
 
+PROJECT_ID = os.environ['GOOGLE_CLOUD_PROJECT']
+
 PUBSUB_SUBSCRIPTION = 'codelab'
 
-CREDENTIALS_FILE = '../account.json'
 PROCUREMENT_API = 'cloudcommerceprocurement'
 
 
@@ -39,18 +39,19 @@ def _generate_internal_account_id():
 class Procurement(object):
     """Utilities for interacting with the Procurement API."""
 
-    def __init__(self, credentials, database, project_id):
-        self.service = build(PROCUREMENT_API, 'v1', credentials=credentials,
-                             cache_discovery=False)
-        self.project_id = project_id
+    def __init__(self, database):
+        self.service = build(PROCUREMENT_API, 'v1', cache_discovery=False)
         self.database = database
 
     ##########################
     ### Account operations ###
     ##########################
 
+    def _get_account_id(self, name):
+        return name[len('providers/DEMO-{}/accounts/'.format(PROJECT_ID)):]
+
     def _get_account_name(self, account_id):
-        return 'providers/DEMO-{}/accounts/{}'.format(self.project_id,
+        return 'providers/DEMO-{}/accounts/{}'.format(PROJECT_ID,
                                                       account_id)
 
     def get_account(self, account_id):
@@ -122,37 +123,141 @@ class Procurement(object):
     ### Entitlement operations ###
     ##############################
 
-    def handle_entitlement_message(self):
-        ### TODO: Complete in section 3. ###
+    def _get_entitlement_name(self, entitlement_id):
+        return 'providers/DEMO-{}/entitlements/{}'.format(PROJECT_ID,
+                                                          entitlement_id)
+
+    def get_entitlement(self, entitlement_id):
+        """Gets an entitlement from the Procurement Service."""
+        name = self._get_entitlement_name(entitlement_id)
+        request = self.service.providers().entitlements().get(name=name)
+        try:
+            response = request.execute()
+            return response
+        except HttpError as err:
+            if err.resp.status == 404:
+                return None
+
+    def approve_entitlement(self, entitlement_id):
+        """Approves the entitlement in the Procurement Service."""
+        name = self._get_entitlement_name(entitlement_id)
+        request = self.service.providers().entitlements().approve(
+            name=name, body={})
+        request.execute()
+
+    def approve_entitlement_plan_change(self, entitlement_id, new_pending_plan):
+        """Approves the entitlement plan change in the Procurement Service."""
+        name = self._get_entitlement_name(entitlement_id)
+        body = {'pendingPlanName': new_pending_plan}
+        request = self.service.providers().entitlements().approvePlanChange(
+            name=name, body=body)
+        request.execute()
+
+    def handle_active_entitlement(self, entitlement, customer, account_id):
+        """Updates the database to match the active entitlement."""
+        product = {
+            'product_id': entitlement['product'],
+            'plan_id': entitlement['plan'],
+            'start_time': entitlement['createTime'],
+        }
+
+        if 'usageReportingId' in entitlement:
+            product['consumer_id'] = entitlement['usageReportingId']
+
+        customer['products'][entitlement['product']] = product
+
+        ### TODO: Set up the service for the customer to use. ###
+        self.database.write(account_id, customer)
+
+    def handle_entitlement_message(self, message, event_type):
+        """Handles incoming Pub/Sub messages about entitlement resources."""
+        entitlement_id = message['id']
+
+        entitlement = self.get_entitlement(entitlement_id)
+
+        if not entitlement:
+            ### TODO: Complete in section 5. ###
+            return False
+
+        account_id = self._get_account_id(entitlement['account'])
+        customer = self.database.read(account_id)
+
+        state = entitlement['state']
+
+        if not customer:
+            # If the record for this customer does not exist, don't ack the
+            # message and wait until an account message is handled and a record
+            # is created.
+            return False
+
+        if event_type == 'ENTITLEMENT_CREATION_REQUESTED':
+            if state == 'ENTITLEMENT_ACTIVATION_REQUESTED':
+                # Approve the entitlement and wait for another message for when
+                # it becomes active before setting up the service for the
+                # customer and updating our records.
+                self.approve_entitlement(entitlement_id)
+                return True
+
+        elif event_type == 'ENTITLEMENT_ACTIVE':
+            if state == 'ENTITLEMENT_ACTIVE':
+                # Handle an active entitlement by writing to the database.
+                self.handle_active_entitlement(entitlement, customer,
+                                               account_id)
+                return True
+
+        elif event_type == 'ENTITLEMENT_PLAN_CHANGE_REQUESTED':
+            if state == 'ENTITLEMENT_PENDING_PLAN_CHANGE_APPROVAL':
+                # Don't write anything to our database until the entitlement
+                # becomes active within the Procurement Service.
+                self.approve_entitlement_plan_change(
+                    entitlement_id, entitlement['newPendingPlan'])
+                return True
+
+        elif event_type == 'ENTITLEMENT_PLAN_CHANGED':
+            if state == 'ENTITLEMENT_ACTIVE':
+                # Handle an active entitlement after a plan change.
+                self.handle_active_entitlement(entitlement, customer,
+                                               account_id)
+                return True
+
+        elif event_type == 'ENTITLEMENT_PLAN_CHANGE_CANCELLED':
+            # Do nothing. We approved the original change, but we never recorded
+            # it or changed the service level since it hadn't taken effect yet.
+            return True
+
+        elif event_type == 'ENTITLEMENT_CANCELLED':
+            ### TODO: Complete in section 5. ###
+            pass
+
+        elif event_type == 'ENTITLEMENT_PENDING_CANCELLATION':
+            ### TODO: Complete in section 5. ###
+            pass
+
+        elif event_type == 'ENTITLEMENT_CANCELLATION_REVERTED':
+            ### TODO: Complete in section 5. ###
+            pass
+
+        elif event_type == 'ENTITLEMENT_DELETED':
+            ### TODO: Complete in section 5. ###
+            pass
+
         return False
-
-
-def _get_credentials():
-    # The credentials use the JSON keyfile generated during service account
-    # creation on the Cloud Console.
-    return service_account.Credentials.from_service_account_file(
-        os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE),
-        scopes=['https://www.googleapis.com/auth/cloud-platform'])
 
 
 def main(argv):
     """Main entrypoint to the integration with the Procurement Service."""
 
-    if len(argv) < 2:
-        print 'Usage: python -m impl.step_2_account.app <project_id>'
+    if len(argv) != 1:
+        print 'Usage: python -m impl.step_4_entitlement_change.app'
         return
-
-    project_id = argv[1]
-
-    credentials = _get_credentials()
 
     # Construct a service for the Partner Procurement API.
     database = JsonDatabase()
-    procurement = Procurement(credentials, database, project_id)
+    procurement = Procurement(database)
 
     # Get the subscription object in order to perform actions on it.
-    subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
-    subscription_path = subscriber.subscription_path(project_id,
+    subscriber = pubsub_v1.SubscriberClient()
+    subscription_path = subscriber.subscription_path(PROJECT_ID,
                                                      PUBSUB_SUBSCRIPTION)
 
     def callback(message):
@@ -165,7 +270,8 @@ def main(argv):
 
         ack = False
         if 'entitlement' in payload:
-            ack = procurement.handle_entitlement_message()
+            ack = procurement.handle_entitlement_message(payload['entitlement'],
+                                                         payload['eventType'])
         elif 'account' in payload:
             ack = procurement.handle_account_message(payload['account'])
         else:

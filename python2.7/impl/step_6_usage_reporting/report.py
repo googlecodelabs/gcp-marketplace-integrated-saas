@@ -18,11 +18,9 @@ import sys
 import uuid
 
 from googleapiclient.discovery import build, build_from_document
-from google.oauth2 import service_account
 
 from impl.database.database import JsonDatabase
 
-CREDENTIALS_FILE = '../account.json'
 STAGING_DISCOVERY_FILE = 'staging_servicecontrol_discovery.json'
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -39,14 +37,6 @@ def _get_staging_discovery():
         return f.read()
 
 
-def _get_credentials():
-    # The credentials use the JSON keyfile generated during service account
-    # creation on the Cloud Console.
-    return service_account.Credentials.from_service_account_file(
-        os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE),
-        scopes=['https://www.googleapis.com/auth/cloud-platform'])
-
-
 def main(argv):
     """Sends usage reports to Google Service Control for all users."""
 
@@ -60,14 +50,12 @@ def main(argv):
     service_name = argv[2]
     metric_service_name = argv[2]
 
-    credentials = _get_credentials()
     service = None
     if env == 'prod':
-        service = build('servicecontrol', 'v1', credentials=credentials)
+        service = build('servicecontrol', 'v1')
     else:
         service_name = 'staging.' + service_name
-        service = build_from_document(
-            _get_staging_discovery(), credentials=credentials)
+        service = build_from_document(_get_staging_discovery())
 
     database = JsonDatabase()
 

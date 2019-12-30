@@ -18,35 +18,22 @@ import pprint
 import sys
 
 from google.cloud import pubsub_v1
-from google.oauth2 import service_account
+
+PROJECT_ID = os.environ['GOOGLE_CLOUD_PROJECT']
 
 PUBSUB_SUBSCRIPTION = 'codelab'
-
-CREDENTIALS_FILE = '../account.json'
-
-
-def _get_credentials():
-    # The credentials use the JSON keyfile generated during service account
-    # creation on the Cloud Console.
-    return service_account.Credentials.from_service_account_file(
-        os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE),
-        scopes=['https://www.googleapis.com/auth/cloud-platform'])
 
 
 def main(argv):
     """Main entrypoint to the integration with the Procurement Service."""
 
-    if len(argv) < 2:
-        print 'Usage: python -m impl.step_1_pubsub.app <project_id>'
+    if len(argv) != 1:
+        print 'Usage: python -m impl.step_1_pubsub.app'
         return
 
-    project_id = argv[1]
-
-    credentials = _get_credentials()
-
     # Get the subscription object in order to perform actions on it.
-    subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
-    subscription_path = subscriber.subscription_path(project_id,
+    subscriber = pubsub_v1.SubscriberClient()
+    subscription_path = subscriber.subscription_path(PROJECT_ID,
                                                      PUBSUB_SUBSCRIPTION)
 
     def callback(message):

@@ -15,7 +15,7 @@
 import json
 import os
 
-DATABASE_FILE = os.path.join(os.path.dirname(__file__), 'database.json')
+DATABASE_FILE = os.environ['PROCUREMENT_CODELAB_DATABASE']
 
 
 class JsonDatabase(object):

@@ -21,13 +21,13 @@ import uuid
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.cloud import pubsub_v1
-from google.oauth2 import service_account
 
 from impl.database.database import JsonDatabase
 
+PROJECT_ID = os.environ['GOOGLE_CLOUD_PROJECT']
+
 PUBSUB_SUBSCRIPTION = 'codelab'
 
-CREDENTIALS_FILE = '../account.json'
 PROCUREMENT_API = 'cloudcommerceprocurement'
 
 
@@ -39,10 +39,8 @@ def _generate_internal_account_id():
 class Procurement(object):
     """Utilities for interacting with the Procurement API."""
 
-    def __init__(self, credentials, database, project_id):
-        self.service = build(PROCUREMENT_API, 'v1', credentials=credentials,
-                             cache_discovery=False)
-        self.project_id = project_id
+    def __init__(self, database):
+        self.service = build(PROCUREMENT_API, 'v1', cache_discovery=False)
         self.database = database
 
     ##########################
@@ -50,10 +48,10 @@ class Procurement(object):
     ##########################
 
     def _get_account_id(self, name):
-        return name[len('providers/DEMO-{}/accounts/'.format(self.project_id)):]
+        return name[len('providers/DEMO-{}/accounts/'.format(PROJECT_ID)):]
 
     def _get_account_name(self, account_id):
-        return 'providers/DEMO-{}/accounts/{}'.format(self.project_id,
+        return 'providers/DEMO-{}/accounts/{}'.format(PROJECT_ID,
                                                       account_id)
 
     def get_account(self, account_id):
@@ -126,7 +124,7 @@ class Procurement(object):
     ##############################
 
     def _get_entitlement_name(self, entitlement_id):
-        return 'providers/DEMO-{}/entitlements/{}'.format(self.project_id,
+        return 'providers/DEMO-{}/entitlements/{}'.format(PROJECT_ID,
                                                           entitlement_id)
 
     def get_entitlement(self, entitlement_id):
@@ -225,32 +223,20 @@ class Procurement(object):
         return False
 
 
-def _get_credentials():
-    # The credentials use the JSON keyfile generated during service account
-    # creation on the Cloud Console.
-    return service_account.Credentials.from_service_account_file(
-        os.path.join(os.path.dirname(__file__), CREDENTIALS_FILE),
-        scopes=['https://www.googleapis.com/auth/cloud-platform'])
-
-
 def main(argv):
     """Main entrypoint to the integration with the Procurement Service."""
 
-    if len(argv) < 2:
-        print 'Usage: python -m impl.step_3_entitlement_create.app <project_id>'
+    if len(argv) != 1:
+        print 'Usage: python -m impl.step_3_entitlement_create.app'
         return
-
-    project_id = argv[1]
-
-    credentials = _get_credentials()
 
     # Construct a service for the Partner Procurement API.
     database = JsonDatabase()
-    procurement = Procurement(credentials, database, project_id)
+    procurement = Procurement(database)
 
     # Get the subscription object in order to perform actions on it.
-    subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
-    subscription_path = subscriber.subscription_path(project_id,
+    subscriber = pubsub_v1.SubscriberClient()
+    subscription_path = subscriber.subscription_path(PROJECT_ID,
                                                      PUBSUB_SUBSCRIPTION)
 
     def callback(message):

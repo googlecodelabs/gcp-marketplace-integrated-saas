@@ -16,7 +16,8 @@ import sys
 
 from google.api_core.exceptions import PermissionDenied
 from google.cloud import pubsub_v1
-from google.oauth2 import service_account
+
+PROJECT_ID = os.environ['GOOGLE_CLOUD_PROJECT']
 
 PROJECT_IAM_PAGE = 'https://console.cloud.google.com/iam-admin/iam?project={}'
 PROJECT_PUBSUB_PAGE = 'https://console.cloud.google.com/apis/library/pubsub.googleapis.com?project={}'
@@ -25,34 +26,18 @@ TOPIC_PROJECT = 'cloudcommerceproc-prod'
 TOPIC_NAME_PREFIX = 'DEMO-'
 SUBSCRIPTION_NAME = 'codelab'
 
-CREDENTIALS_FILE = '../account.json'
-
-
-def _get_credentials():
-    """Generates credentials for issuing requests."""
-
-    # The credentials use the JSON keyfile generated during service account
-    # creation on the Cloud Console.
-    return service_account.Credentials.from_service_account_file(
-        CREDENTIALS_FILE,
-        scopes=['https://www.googleapis.com/auth/cloud-platform'])
-
 
 def main(argv):
     """Main entrypoint to the Pub/Sub subscription creation tool."""
 
-    if len(argv) < 2:
-        print 'Usage: python create_subscription.py <project_id>'
+    if len(argv) != 1:
+        print 'Usage: python create_subscription.py'
         return
 
-    project_id = argv[1]
-
-    credentials = _get_credentials()
-
-    subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
+    subscriber = pubsub_v1.SubscriberClient()
     topic_path = subscriber.topic_path(TOPIC_PROJECT,
-                                       TOPIC_NAME_PREFIX + project_id)
-    subscription_path = subscriber.subscription_path(project_id,
+                                       TOPIC_NAME_PREFIX + PROJECT_ID)
+    subscription_path = subscriber.subscription_path(PROJECT_ID,
                                                      SUBSCRIPTION_NAME)
 
     try:
@@ -61,11 +46,11 @@ def main(argv):
     except PermissionDenied:
         error_message = ('PERMISSION DENIED: Check that the Pub/Sub API is '
                          'enabled in your project and that your service '
-                         'account  was granted the Pub/Sub Editor role. \n'
+                         'account was granted the Pub/Sub Editor role. \n'
                          'Check API status at: %s \n'
                          'Check IAM roles at: %s ' % (
-                             PROJECT_PUBSUB_PAGE.format(project_id),
-                             PROJECT_IAM_PAGE.format(project_id)))
+                             PROJECT_PUBSUB_PAGE.format(PROJECT_ID),
+                             PROJECT_IAM_PAGE.format(PROJECT_ID)))
         print error_message
         return
 
