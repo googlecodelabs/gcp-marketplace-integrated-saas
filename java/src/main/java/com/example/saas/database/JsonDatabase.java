@@ -51,23 +51,24 @@ public class JsonDatabase {
     customers = new HashMap<>(jsonCustomers);
   }
 
-  /** */
+  /** Reads a record from the database. */
   public Customer read(String id) {
     return customers.get(id);
   }
 
-  /** */
+  /** Writes a record to the database. */
   public void write(String id, Customer customer) throws IOException {
     customers.put(id, customer);
     commit();
   }
 
-  /** */
+  /** Deletes a record from the database. */
   public void delete(String id) throws IOException {
     customers.remove(id);
     commit();
   }
 
+  // Commits the in-memory data to disk.
   private void commit() throws IOException {
     File file = new File(databasePath);
     FileWriter writer = new FileWriter(file);

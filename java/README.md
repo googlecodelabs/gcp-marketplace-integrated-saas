@@ -2,11 +2,6 @@
 
 #### Setup
 - Install [Maven](http://maven.apache.org/).
-- Set the GOOGLE_APPLICATION_CREDENTIALS environment variable explicitly
-  pointing to a downloaded service account credentials JSON file.
-  
-  Linux: export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
-  Windows: set GOOGLE_APPLICATION_CREDENTIALS=[PATH]
 
 #### Build
 - Build your project with:
@@ -14,32 +9,26 @@
   mvn clean package -DskipTests
 ```
 
-#### Ceate a subscription
+#### Listen to Cloud Pub/Sub messages
 ```
-  mvn exec:java -Dexec.mainClass=com.example.saas.Step1CreatePullSubscription
+  mvn exec:java -Dexec.mainClass=com.example.saas.step1pubsub.App
 ```
-
-####  See the Cloud Pub/Sub messages
+#### Approve customer Accounts
 ```
-  mvn exec:java -Dexec.mainClass=com.example.saas.SubscriberMsg
-```
-
-#### Approving the account
-```
-  mvn exec:java -Dexec.mainClass=com.example.saas.Step2Account
+  mvn exec:java -Dexec.mainClass=com.example.saas.step2account.App
 ```
 
-#### Approve the entitlement
+#### Approve customer Entitlements
 ```
-   mvn exec:java -Dexec.mainClass=com.example.saas.Step3EntitlementCreate
-```
-
-#### Approve changes to an entitlement
-```
-   mvn exec:java -Dexec.mainClass=com.example.saas.Step4EntitlementChange
+  mvn exec:java -Dexec.mainClass=com.example.saas.step3entitlementcreate.App
 ```
 
-#### Handle cancelled purchases
+#### Manage customer Entitlement changes
 ```
-   mvn exec:java -Dexec.mainClass=com.example.saas.Step5EntitlementCancel
+   mvn exec:java -Dexec.mainClass=com.example.saas.step4entitlementchange.App
+```
+
+#### Manage customer Entitlement cancellations
+```
+   mvn exec:java -Dexec.mainClass=com.example.saas.step5entitlementcancel.App
 ```
