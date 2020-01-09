@@ -37,7 +37,7 @@ def main(argv):
 
     procurement = build(PROCUREMENT_API, 'v1', cache_discovery=False)
 
-    account_name = _get_account_name(PROJECT_ID, account_id)
+    account_name = _get_account_name(account_id)
     request = procurement.providers().accounts().reset(name=account_name)
     request.execute()
 
