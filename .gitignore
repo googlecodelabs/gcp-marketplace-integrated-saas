@@ -1,6 +1,4 @@
-pom.xml
-account.json
-database.json
+discovery.json
 target
 java/procurement
 *.pyc
