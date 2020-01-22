@@ -2,5 +2,6 @@ pom.xml
 account.json
 database.json
 target
+java/procurement
 *.pyc
 *~
