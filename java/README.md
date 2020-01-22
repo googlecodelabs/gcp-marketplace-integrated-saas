@@ -32,7 +32,10 @@ dependency.
 1. Install the client library by running `mvn clean install` from inside of the
    `procurement/` directory.
 
-1. Add a new dependency to the `pom.xml` file inside of the `impl/` directory
+1. Update the commented out dependency in the `pom.xml` file inside of the
+   `impl/` directory to include the correct version built in the previous step.
+   The correct version can be found in `pom.xml` in the `procurement/` directory
+   in the `version` tag.
 
        <dependency>
          <groupId>com.google.apis</groupId>
