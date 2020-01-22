@@ -233,7 +233,7 @@ class Procurement(object):
                     del customer['products'][entitlement['product']]
 
                     ### TODO: Turn off customer's service. ###
-                    self.db.write(account_id, customer)
+                    self.database.write(account_id, customer)
                 return True
 
         elif event_type == 'ENTITLEMENT_PENDING_CANCELLATION':
