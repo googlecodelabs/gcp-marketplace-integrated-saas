@@ -1,2 +1,1 @@
-This section updates the application to handle cancellations of the customer's
-Entitlement.
+This section creates a job that runs hourly for reporting customer usage.
