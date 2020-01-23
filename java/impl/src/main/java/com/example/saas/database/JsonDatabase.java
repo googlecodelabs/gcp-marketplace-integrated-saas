@@ -24,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,5 +75,10 @@ public class JsonDatabase {
     FileWriter writer = new FileWriter(file);
     gson.toJson(customers, writer);
     writer.close();
+  }
+
+  /** Provides a way to iterate over all elements in the database. */
+  public Collection<Customer> getAll() {
+    return customers.values();
   }
 }

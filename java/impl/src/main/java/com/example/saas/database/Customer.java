@@ -28,5 +28,6 @@ public class Customer {
     public String planId;
     public String consumerId;
     public String startTime;
+    public String lastReportTime;
   }
 }
