@@ -40,22 +40,13 @@ def _get_staging_discovery():
 def main(argv):
     """Sends usage reports to Google Service Control for all users."""
 
-    if len(argv) < 3 or argv[1].lower() not in ['staging', 'prod']:
-        print(
-            'Usage: python -m impl.step_6_report_usage.report staging|prod '
-            '<service_name>')
+    if len(argv) != 2:
+        print('Usage: python -m impl.step_6_report_usage.report <service_name>')
         return
 
-    env = argv[1].lower()
-    service_name = argv[2]
-    metric_service_name = argv[2]
+    service_name = argv[1]
 
-    service = None
-    if env == 'prod':
-        service = build('servicecontrol', 'v1')
-    else:
-        service_name = 'staging.' + service_name
-        service = build_from_document(_get_staging_discovery())
+    service = build('servicecontrol', 'v1')
 
     database = JsonDatabase()
 
@@ -77,7 +68,7 @@ def main(argv):
                 'startTime': start_time,
                 'endTime': end_time,
                 'metricValueSets': [{
-                    'metricName': '%s/%s_requests' % (metric_service_name,
+                    'metricName': '%s/%s_requests' % (service_name,
                                                       metric_plan_name),
                     'metricValues': [{
                         'int64Value': _get_usage_for_product(),
