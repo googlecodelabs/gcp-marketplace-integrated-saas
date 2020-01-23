@@ -47,6 +47,11 @@
       <scope>compile</scope>
     </dependency>
 -->
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-servicecontrol</artifactId>
+      <version>v1-rev20191003-1.30.3</version>
+    </dependency>
 
     <dependency>
         <groupId>com.google.api-client</groupId>
@@ -80,14 +85,6 @@
       <scope>test</scope>
     </dependency>  
   </dependencies>
-
-  <!-- TODO(tmandel): remove soon -->
-  <!-- <repositories> -->
-  <!--   <repository> -->
-  <!--     <id>bkper-releases</id> -->
-  <!--     <url>https://github.com/bkper/mvn-repo/raw/master/releases</url> -->
-  <!--   </repository> -->
-  <!-- </repositories> -->
 
   <build>
     <plugins>

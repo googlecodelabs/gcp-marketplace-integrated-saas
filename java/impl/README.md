@@ -32,3 +32,8 @@
 ```
    mvn exec:java -Dexec.mainClass=com.example.saas.step5entitlementcancel.App
 ```
+
+#### Report customer usage of the service
+```
+   mvn exec:java -Dexec.mainClass=com.example.saas.step6usagereporting.Report
+```
