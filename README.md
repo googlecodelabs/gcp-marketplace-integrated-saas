@@ -4,7 +4,8 @@
 This is a step-by-step tutorial for integrating with the Cloud Commerce Partner
 Procurement API to manage customer Accounts and Entitlements.
 
-The instructions for this codelab are located at https://codelabs.developers.google.com/codelabs/gcp-marketplace-integrated-saas.
+The instructions for this codelab are located at
+https://codelabs.developers.google.com/codelabs/gcp-marketplace-integrated-saas.
 
 The onboarding guide is located at
 https://cloud.google.com/marketplace/docs/partners/integrated-saas/.
@@ -13,6 +14,8 @@ https://cloud.google.com/marketplace/docs/partners/integrated-saas/.
 
 The codelab directions are specifically tailored to the [Python 2.7](python2.7/)
 implementation.
+
+A [Java](java/) implementation also exists which has similar steps.
 
 ## Setup
 
