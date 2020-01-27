@@ -51,7 +51,7 @@ def main(argv):
     database = JsonDatabase()
 
     for customer_id, customer in database.items():
-        for product_id, product in customer['products'].iteritems():
+        for product_id, product in customer['products'].items():
             if 'consumer_id' not in product:
                 continue
             end_time = datetime.datetime.utcnow().strftime(TIME_FORMAT)
