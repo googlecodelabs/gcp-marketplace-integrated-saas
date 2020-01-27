@@ -227,7 +227,7 @@ def main(argv):
     """Main entrypoint to the integration with the Procurement Service."""
 
     if len(argv) != 1:
-        print 'Usage: python -m impl.step_3_entitlement_create.app'
+        print('Usage: python -m impl.step_3_entitlement_create.app')
         return
 
     # Construct a service for the Partner Procurement API.
@@ -243,9 +243,9 @@ def main(argv):
         """Callback for handling Cloud Pub/Sub messages."""
         payload = json.loads(message.data)
 
-        print 'Received message:'
+        print('Received message:')
         pprint.pprint(payload)
-        print
+        print()
 
         ack = False
         if 'entitlement' in payload:
@@ -263,8 +263,8 @@ def main(argv):
 
     subscription = subscriber.subscribe(subscription_path, callback=callback)
 
-    print 'Listening for messages on {}'.format(subscription_path)
-    print 'Exit with Ctrl-\\'
+    print('Listening for messages on {}'.format(subscription_path))
+    print('Exit with Ctrl-\\')
 
     while True:
         try:

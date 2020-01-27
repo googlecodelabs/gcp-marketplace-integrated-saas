@@ -46,6 +46,6 @@ class JsonDatabase(object):
         with open(DATABASE_FILE, 'w') as f:
             json.dump(self.database, f)
 
-    def iteritems(self):
+    def items(self):
         """Provides a way to iterate over all elements in the database."""
-        return self.database.iteritems()
+        return self.database.items()

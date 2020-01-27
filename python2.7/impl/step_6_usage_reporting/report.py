@@ -50,7 +50,7 @@ def main(argv):
 
     database = JsonDatabase()
 
-    for customer_id, customer in database.iteritems():
+    for customer_id, customer in database.items():
         for product_id, product in customer['products'].iteritems():
             if 'consumer_id' not in product:
                 continue
@@ -81,9 +81,9 @@ def main(argv):
                 }).execute()
 
             if 'checkErrors' in check:
-                print 'Errors for user %s with product %s:' % (customer_id,
-                                                               product_id)
-                print check['checkErrors']
+                print('Errors for user %s with product %s:' % (customer_id,
+                                                               product_id))
+                print(check['checkErrors'])
                 ### TODO: Temporarily turn off service for the user. ###
                 continue
             service.services().report(

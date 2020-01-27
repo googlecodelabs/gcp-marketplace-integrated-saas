@@ -28,7 +28,7 @@ def main(argv):
     """Main entrypoint to the integration with the Procurement Service."""
 
     if len(argv) != 1:
-        print 'Usage: python -m impl.step_1_pubsub.app'
+        print('Usage: python -m impl.step_1_pubsub.app')
         return
 
     # Get the subscription object in order to perform actions on it.
@@ -40,14 +40,14 @@ def main(argv):
         """Callback for handling Cloud Pub/Sub messages."""
         payload = json.loads(message.data)
 
-        print 'Received message:'
+        print('Received message:')
         pprint.pprint(payload)
-        print
+        print()
 
     subscription = subscriber.subscribe(subscription_path, callback=callback)
 
-    print 'Listening for messages on {}'.format(subscription_path)
-    print 'Exit with Ctrl-\\'
+    print('Listening for messages on {}'.format(subscription_path))
+    print('Exit with Ctrl-\\')
 
     while True:
         try:
