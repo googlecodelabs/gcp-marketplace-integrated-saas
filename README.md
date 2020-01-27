@@ -15,7 +15,8 @@ https://cloud.google.com/marketplace/docs/partners/integrated-saas/.
 The codelab directions are specifically tailored to the [Python 2.7](python2.7/)
 implementation.
 
-A [Java](java/) implementation also exists which has similar steps.
+There are also [Python 3](python3/) and [Java](java/) versions that
+implement similar steps.
 
 ## Setup
 
