@@ -30,7 +30,7 @@ def main(argv):
     """Main entrypoint to the Account reset tool."""
 
     if len(argv) != 2:
-        print 'Usage: python reset_account.py <account_id>'
+        print('Usage: python3 reset_account.py <account_id>')
         return
 
     account_id = argv[1]

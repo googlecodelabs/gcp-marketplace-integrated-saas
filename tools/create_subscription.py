@@ -32,7 +32,7 @@ def main(argv):
     """Main entrypoint to the Pub/Sub subscription creation tool."""
 
     if len(argv) != 1:
-        print 'Usage: python create_subscription.py'
+        print('Usage: python3 create_subscription.py')
         return
 
     subscriber = pubsub_v1.SubscriberClient()
@@ -52,10 +52,10 @@ def main(argv):
                          'Check IAM roles at: %s ' % (
                              PROJECT_PUBSUB_PAGE.format(PROJECT_ID),
                              PROJECT_IAM_PAGE.format(PROJECT_ID)))
-        print error_message
+        print(error_message)
         return
 
-    print 'Subscription created: {}'.format(subscription)
+    print('Subscription created: {}'.format(subscription))
 
 
 if __name__ == '__main__':
