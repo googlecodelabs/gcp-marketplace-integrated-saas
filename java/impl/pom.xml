@@ -48,6 +48,7 @@
     </dependency>
 -->
 
+
     <dependency>
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-servicecontrol</artifactId>
@@ -69,7 +70,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>20.0</version>
+      <version>29.0-jre</version>
     </dependency>
 
     <!-- Test dependencies -->
