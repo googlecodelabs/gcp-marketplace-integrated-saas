@@ -35,5 +35,5 @@
 
 #### Report customer usage of the service
 ```
-   mvn exec:java -Dexec.mainClass=com.example.saas.step6usagereporting.Report
+   mvn exec:java -Dexec.mainClass=com.example.saas.step6usagereporting.Report -Dexec..args=isaas-codelab.mp-marketplace-partner-demos.appspot.com
 ```

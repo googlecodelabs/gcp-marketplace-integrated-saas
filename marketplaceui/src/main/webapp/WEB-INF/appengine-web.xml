@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <runtime>java8</runtime>
+  <threadsafe>true</threadsafe>
+  <version>1</version>
+
+  <!--
+    Uncomment the service setting below if there is default service already in app engine, for more info, see
+    https://cloud.google.com/appengine/docs/standard/java/tools/uploadinganapp#requirements_for_multiple_services
+  -->
+  <!-- <service>marketplaceui</service> -->
+
+  <!-- Enable old appengine Java 7 behavior for Networking -->
+  <!-- For more info, see https://cloud.google.com/appengine/docs/standard/java/issue-requests -->
+  <url-stream-handler>urlfetch</url-stream-handler>
+
+  <system-properties>
+    <!-- Replace with your domain name -->
+    <property name="jwt.audience"
+              value="marketplace-partner-demos.wl.r.appspot.com" />
+</system-properties>
+</appengine-web-app>
