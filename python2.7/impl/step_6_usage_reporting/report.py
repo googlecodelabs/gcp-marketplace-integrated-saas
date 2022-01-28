@@ -86,6 +86,14 @@ def main(argv):
                 print(check['checkErrors'])
                 ### TODO: Temporarily turn off service for the user. ###
                 continue
+
+            # userLabels are only allowed in report()
+            operation['userLabels'] = {
+              'cloudmarketplace.googleapis.com/container_name': 'saas-storage-solution',
+              'cloudmarketplace.googleapis.com/resource_name': 'users-profile-db'
+            }
+            
+            
             service.services().report(
                 serviceName=service_name, body={
                     'operations': [operation]
