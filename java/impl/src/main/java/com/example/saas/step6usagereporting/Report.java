@@ -98,10 +98,8 @@ public class Report {
         }
 
         // userLabels are only allowed in report()
-        Map<String, String> userLabels = ImmutableMap.<String, String>builder()
-            .put("cloudmarketplace.googleapis.com/container_name", "saas-storage-solution")
-            .put("cloudmarketplace.googleapis.com/resource_name", "users-profile-db").build();
-        operation.setUserLabels(userLabels);
+        // Attribute the current cost of this report to the `products_db` resource
+        Report.addCostAttribution(operation, "saas-storage-solutions", "products_db");
 
         ReportRequest reportRequest = new ReportRequest();
         reportRequest.setOperations(Collections.singletonList(operation));
@@ -117,5 +115,20 @@ public class Report {
   private static long getUsageForProduct() {
     // TODO: Get the usage since the last report time.
     return 10;
+  }
+
+  // Attribute the cost associated with this `operation` to the given `resourceName` within the given `containerName`
+  private static void addCostAttribution(Operation operation, String containerName, String resourceName) {
+        ////////////////////////////////////////// IMPORTANT /////////////////////////////////////////////
+        // cloudmarketplace.googleapis.com/resource_name and                                            //
+        // cloudmarketplace.googleapis.com/container_name are reserved Marketplace-defined label keys.  //
+        // These labels are intended to capture the context of the usage within the partner’s native    //
+        // service and resource hierarchy. The customer-assigned names of these resources would be      //
+        // included as label values in usage reports.                                                   //
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+    Map<String, String> userLabels = ImmutableMap.<String, String>builder()
+        .put("cloudmarketplace.googleapis.com/container_name", containerName)
+        .put("cloudmarketplace.googleapis.com/resource_name", resourceName).build();
+    operation.setUserLabels(userLabels);
   }
 }
