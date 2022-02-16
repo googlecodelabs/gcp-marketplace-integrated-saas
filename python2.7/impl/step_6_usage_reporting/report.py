@@ -25,6 +25,21 @@ STAGING_DISCOVERY_FILE = 'staging_servicecontrol_discovery.json'
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
+# Attribute the cost associated with this `operation` to the given `resource_name` within the given `container_name`
+def _add_cost_attribution(operation, container_name, resource_name):
+  ########################################### IMPORTANT ##########################################
+  # cloudmarketplace.googleapis.com/resource_name and                                            #
+  # cloudmarketplace.googleapis.com/container_name are reserved Marketplace-defined label keys.  #
+  # These labels are intended to capture the context of the usage within the partner’s native    #
+  # service and resource hierarchy. The customer-assigned names of these resources would be      #
+  # included as label values in usage reports.                                                   #
+  ################################################################################################
+  operation['userLabels'] = {
+    'cloudmarketplace.googleapis.com/container_name': container_name,
+    'cloudmarketplace.googleapis.com/resource_name': resource_name
+  }
+
+
 def _get_usage_for_product():
     ### TODO: Get the usage since the last report time. ###
     return '10'
@@ -86,6 +101,11 @@ def main(argv):
                 print(check['checkErrors'])
                 ### TODO: Temporarily turn off service for the user. ###
                 continue
+
+            # userLabels are only allowed in report()
+            # Attribute the current cost of this report to the `products_db` resource
+            _add_cost_attribution(operation, 'saas-storage-solutions', 'products_db')
+            
             service.services().report(
                 serviceName=service_name, body={
                     'operations': [operation]

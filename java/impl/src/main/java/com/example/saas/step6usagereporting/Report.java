@@ -29,8 +29,11 @@ import com.google.api.services.servicecontrol.v1.model.MetricValueSet;
 import com.google.api.services.servicecontrol.v1.model.Operation;
 import com.google.api.services.servicecontrol.v1.model.ReportRequest;
 import com.google.cloud.ServiceOptions;
+import com.google.common.collect.ImmutableMap;
+
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 /** Reports usage for all customers in the database. */
@@ -47,15 +50,11 @@ public class Report {
 
     String serviceName = args[0];
 
-    ServiceControl serviceControl =
-        new ServiceControl.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                new JacksonFactory(),
-                new HttpCredentialsAdapter(
-                    GoogleCredentials.getApplicationDefault().createScoped(
-                        Collections.singletonList(CLOUD_SCOPE))))
-            .setApplicationName(ServiceOptions.getDefaultProjectId())
-            .build();
+    ServiceControl serviceControl = new ServiceControl.Builder(GoogleNetHttpTransport.newTrustedTransport(),
+        new JacksonFactory(),
+        new HttpCredentialsAdapter(
+            GoogleCredentials.getApplicationDefault().createScoped(Collections.singletonList(CLOUD_SCOPE))))
+                .setApplicationName(ServiceOptions.getDefaultProjectId()).build();
 
     JsonDatabase db = new JsonDatabase();
 
@@ -65,10 +64,8 @@ public class Report {
           continue;
         }
 
-        String startTime =
-            product.lastReportTime != null && !product.lastReportTime.isEmpty()
-                ? product.lastReportTime
-                : product.startTime;
+        String startTime = product.lastReportTime != null && !product.lastReportTime.isEmpty() ? product.lastReportTime
+            : product.startTime;
         String endTime = Instant.now().toString();
         String metricPlanName = product.planId.replace('-', '_');
 
@@ -80,8 +77,7 @@ public class Report {
         operation.setEndTime(endTime);
 
         MetricValueSet metricValueSet = new MetricValueSet();
-        metricValueSet.setMetricName(
-            String.format("%s/%s_requests", serviceName, metricPlanName));
+        metricValueSet.setMetricName(String.format("%s/%s_requests", serviceName, metricPlanName));
 
         MetricValue metricValue = new MetricValue();
         metricValue.setInt64Value(getUsageForProduct());
@@ -91,19 +87,19 @@ public class Report {
 
         CheckRequest checkRequest = new CheckRequest();
         checkRequest.setOperation(operation);
-        CheckResponse response =
-            serviceControl.services().check(serviceName, checkRequest).execute();
+        CheckResponse response = serviceControl.services().check(serviceName, checkRequest).execute();
 
         if (response.getCheckErrors() != null && response.getCheckErrors().size() > 0) {
-          System.out.printf(
-              "Errors for user %s with product %s:\n",
-              customer.procurementAccountId,
-              product.productId);
+          System.out.printf("Errors for user %s with product %s:\n", customer.procurementAccountId, product.productId);
           System.out.println(response.getCheckErrors());
 
           // TODO: Temporarily turn off service for the user.
           continue;
         }
+
+        // userLabels are only allowed in report()
+        // Attribute the current cost of this report to the `products_db` resource
+        Report.addCostAttribution(operation, "saas-storage-solutions", "products_db");
 
         ReportRequest reportRequest = new ReportRequest();
         reportRequest.setOperations(Collections.singletonList(operation));
@@ -119,5 +115,20 @@ public class Report {
   private static long getUsageForProduct() {
     // TODO: Get the usage since the last report time.
     return 10;
+  }
+
+  // Attribute the cost associated with this `operation` to the given `resourceName` within the given `containerName`
+  private static void addCostAttribution(Operation operation, String containerName, String resourceName) {
+        ////////////////////////////////////////// IMPORTANT /////////////////////////////////////////////
+        // cloudmarketplace.googleapis.com/resource_name and                                            //
+        // cloudmarketplace.googleapis.com/container_name are reserved Marketplace-defined label keys.  //
+        // These labels are intended to capture the context of the usage within the partner’s native    //
+        // service and resource hierarchy. The customer-assigned names of these resources would be      //
+        // included as label values in usage reports.                                                   //
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+    Map<String, String> userLabels = ImmutableMap.<String, String>builder()
+        .put("cloudmarketplace.googleapis.com/container_name", containerName)
+        .put("cloudmarketplace.googleapis.com/resource_name", resourceName).build();
+    operation.setUserLabels(userLabels);
   }
 }
