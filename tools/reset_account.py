@@ -14,6 +14,7 @@
 
 import os
 import sys
+import time
 
 from googleapiclient.discovery import build
 
@@ -41,6 +42,13 @@ def main(argv):
     request = procurement.providers().accounts().reset(name=account_name)
     request.execute()
 
+    # The account is reset as pending approval status. There is no
+    # account message notifying API clients. To unblock the testing
+    # approve the account.
+    time.sleep(20) # Waiting for reset completion
+    approve_request = procurement.providers().accounts().approve(
+        name=account_name, body={'approvalName': 'signup'})
+    approve_request.execute()
 
 if __name__ == '__main__':
     main(sys.argv)
