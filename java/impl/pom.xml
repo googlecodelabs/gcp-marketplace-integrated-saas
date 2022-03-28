@@ -60,7 +60,7 @@
         <artifactId>google-api-client</artifactId>
         <version>1.30.4</version>
     </dependency>
- 
+
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -70,7 +70,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>29.0-jre</version>
+      <version>31.1-jre</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -85,7 +85,7 @@
       <artifactId>truth</artifactId>
       <version>1.0</version>
       <scope>test</scope>
-    </dependency>  
+    </dependency>
   </dependencies>
 
   <build>
