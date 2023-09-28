@@ -29,34 +29,41 @@ SUBSCRIPTION_NAME = 'codelab'
 
 
 def main(argv):
-    """Main entrypoint to the Pub/Sub subscription creation tool."""
+  """Main entrypoint to the Pub/Sub subscription creation tool."""
 
-    if len(argv) != 1:
-        print('Usage: python3 create_subscription.py')
-        return
+  if len(argv) != 1:
+    print('Usage: python3 create_subscription.py')
+    return
 
-    subscriber = pubsub_v1.SubscriberClient()
-    topic_path = subscriber.topic_path(TOPIC_PROJECT,
-                                       TOPIC_NAME_PREFIX + PROJECT_ID)
-    subscription_path = subscriber.subscription_path(PROJECT_ID,
-                                                     SUBSCRIPTION_NAME)
+  subscriber = pubsub_v1.SubscriberClient()
+  topic_path = subscriber.topic_path(
+      TOPIC_PROJECT, TOPIC_NAME_PREFIX + PROJECT_ID
+  )
+  subscription_path = subscriber.subscription_path(
+      PROJECT_ID, SUBSCRIPTION_NAME
+  )
 
-    try:
-        subscription = subscriber.create_subscription(subscription_path,
-                                                      topic_path)
-    except PermissionDenied:
-        error_message = ('PERMISSION DENIED: Check that the Pub/Sub API is '
-                         'enabled in your project and that your service '
-                         'account was granted the Pub/Sub Editor role. \n'
-                         'Check API status at: %s \n'
-                         'Check IAM roles at: %s ' % (
-                             PROJECT_PUBSUB_PAGE.format(PROJECT_ID),
-                             PROJECT_IAM_PAGE.format(PROJECT_ID)))
-        print(error_message)
-        return
+  try:
+    subscription = subscriber.create_subscription(
+        name=subscription_path, topic=topic_path
+    )
+  except PermissionDenied:
+    error_message = (
+        'PERMISSION DENIED: Check that the Pub/Sub API is '
+        'enabled in your project and that your service '
+        'account was granted the Pub/Sub Editor role. \n'
+        'Check API status at: %s \n'
+        'Check IAM roles at: %s '
+        % (
+            PROJECT_PUBSUB_PAGE.format(PROJECT_ID),
+            PROJECT_IAM_PAGE.format(PROJECT_ID),
+        )
+    )
+    print(error_message)
+    return
 
-    print('Subscription created: {}'.format(subscription))
+  print('Subscription created: {}'.format(subscription))
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+  main(sys.argv)
