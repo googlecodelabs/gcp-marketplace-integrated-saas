@@ -1,8 +1,7 @@
 
 # Cloud Commerce Partner Procurement API Integration Codelab
 
-This is a step-by-step tutorial for integrating with the Cloud Commerce Partner
-Procurement API to manage customer Accounts and Entitlements.
+A step by step guide to get familiar with the Google Cloud Marketplace procurement and service control APIs
 
 The instructions for this codelab are located at
 https://codelabs.developers.google.com/codelabs/gcp-marketplace-integrated-saas.
@@ -33,4 +32,4 @@ populate this file with `{}`.
 
 ## Disclaimer
 
-This is not an officially supported Google product.
+This codelab helps you to familiarize with the Google Cloud Marketplace procurement and service control APIs. Note this guide does not give a full product environment for testing. This codelab is intended for partners who have access to Producer Portal. If you do not have access to Producer Portal, and are using Partner Portal, follow the instructions in the Partner Portal version of this codelab.
